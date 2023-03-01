@@ -1,23 +1,128 @@
 package vista;
+import java.util.List;
 import java.util.Scanner;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+//import javax.persistence.EntityManager;
+//import javax.persistence.Query;
 
 import hotel_service2.Clientes;
-import mariadb.Mariadb_connect;
-import hotel_service2.Clientes;
+//import mariadb.Mariadb_connect;
+//import hotel_service2.Clientes;
 
 public class VCliente {
 	
 	private Clientes clientes;
 	
+	
 	public VCliente() {
 	clientes = new Clientes();	
+	
 	}
 	
-		
-	
+	public void actualizar() {
+		Scanner scanner = new Scanner(System.in);
+    	System.out.println("Digite el ID del cliente a actualizar:");
+        Long idClientes = scanner.nextLong();
+        System.out.println("Digite el Nombre del cliente a actualizar");
+        String nomCliente = scanner.nextLine();
+       scanner.nextLine();
+
+        Clientes clientes = new Clientes();
+         clientes.setIdCliente(idClientes);
+         clientes.setNomCliente(nomCliente);
+        
+        List<Clientes> listaClientes = clientes.buscar(idClientes, nomCliente);
+	    if (listaClientes != null && !listaClientes.isEmpty()) {
+	    	for (Clientes c : listaClientes) {
+	    		 System.out.println("Clientes encontrados:");
+		        System.out.println(c.toString());   
+		    }
+	    	System.out.println("Digite el ID del cliente a actualizar:");
+	        Long idClienteSeleccionado = scanner.nextLong();
+	        scanner.nextLine();
+	        
+	        Clientes clienteSeleccionado = null;
+	        for (Clientes cliente: listaClientes) {
+	        	if (cliente.getIdCliente().equals(idClienteSeleccionado)) {
+	        		clienteSeleccionado = cliente;
+	        		break;
+	        	}
+	        	
+	        }
+	        
+	        if (clienteSeleccionado != null) {
+	        	//clientes.actualizar2(clienteSeleccionado.getIdCliente(), clienteSeleccionado);
+	        	clienteSeleccionado.setNomCliente(nomCliente);
+	        	clienteSeleccionado.setObjCliente(null);
+	            System.out.println("Cliente a actualizar:");
+	            System.out.println(clienteSeleccionado);
+	            clientes.actualizar2(clienteSeleccionado.getIdCliente(), clienteSeleccionado);
+	            int opcion;
+	            do {
+	            System.out.println("¿Qué desea actualizar?");
+	            System.out.println("1. Nombre");
+	            System.out.println("2. Dirección");
+	            System.out.println("3. Teléfono");
+	            System.out.println("4. Email");
+	            System.out.println("5. Contacto");
+	            System.out.println("6. Observaciones");
+	            System.out.println("7. Salir");
+
+	             opcion = scanner.nextInt();
+	            scanner.nextLine();
+
+	            switch (opcion) {
+	                case 1:
+	                    System.out.println("Nuevo nombre:");
+	                    String nombre = scanner.nextLine();
+	                    clienteSeleccionado.setNomCliente(nombre);
+	                    break;
+	                case 2:
+	                    System.out.println("Nueva dirección:");
+	                    String direccion = scanner.nextLine();
+	                    clienteSeleccionado.setDirCliente(direccion);
+	                    break;
+	                case 3:
+	                	System.out.println("Nuevo Telefono");
+	                	String telefono = scanner.nextLine();
+	                	clienteSeleccionado.setTelCliente(telefono);
+	                	break;
+	                case 4:
+	                	System.out.println("Nuevo email");
+	                	String email = scanner.nextLine();
+	                	clienteSeleccionado.setMailCliente(email);
+	                	break;
+	                case 5:
+	                	System.out.println("Nuevo Contacto");
+	                	String contacto = scanner.nextLine();
+	                	clienteSeleccionado.setContCliente(contacto);
+	                	break;
+	                case 6:
+	                	System.out.println("Nuevas Observaciones");
+	                	String observaciones = scanner.nextLine();
+	                	clienteSeleccionado.setObjCliente(observaciones);
+	                	clientes.actualizar2(clienteSeleccionado.getIdCliente(), clienteSeleccionado);
+	                	break;
+	                	
+	                case 7:
+	                	System.out.println("[+] Hasta luego!");
+	                System.exit(0);
+	                	break;
+	                    
+	                    default:
+	                    	System.out.println("Seleccion invalida");
+	                    	break;
+	           }
+	        
+	    } while (opcion != 6);
+	            System.out.println("[+] Cliente actualizado correctamente.");
+	        
+	    }else {
+	    	System.out.println("[!] No se encotraron al Cliente con el ID y nombre indicado.");
+	    }
+
+	    }
+	}
 	
 	public void vista() {
 		int opcion = 0;
@@ -61,19 +166,24 @@ public class VCliente {
 			  
         case 2:
         	
-            System.out.println("Digite el ID del cliente a buscar:");
-            int idCliente = scanner.nextInt();
-            clientes.buscar(); // utiliza el método buscarCliente de la Clase Clientes
+        	 Clientes clientes = new Clientes();
+        	    System.out.println("Digite el ID del cliente a buscar:");
+        	    Long id = scanner.nextLong();
+        	    scanner.nextLine();
+        	    System.out.println("Digite el nombre del cliente a buscar:");
+        	    String nombre = scanner.nextLine();
+        	    List<Clientes> listaClientes = clientes.buscar(id, nombre);  	    
+        	    System.out.println("Clientes encontrados:");
+        	    for (Clientes c : listaClientes) {
+        	        System.out.println(c.toString());
+        	    }
             break;
-//        case 3:
-//            System.out.println("Digite el ID del cliente a actualizar:");
-//            int idClienteActualizar = scanner.nextInt();
-//            scanner.nextLine();
-//            
-//            System.out.println("Digite el nuevo nombre del cliente:");
-//            String nuevoNombreCliente = scanner.nextLine();
-//            clientes.actualizarCliente(idClienteActualizar, nuevoNombreCliente); // utiliza el método actualizarCliente de la Clase Clientes
-//            break;
+            
+        case 3:
+             actualizar();
+            
+            		
+            break;
 //        case 4:
 //            System.out.println("Digite el ID del cliente a eliminar:");
 //            int idClienteEliminar = scanner.nextInt();
@@ -86,6 +196,9 @@ public class VCliente {
             System.out.println("Opción no válida.");
 		}
 	}
-	scanner.close();
+	//scanner.close();
 		}
+   
+	
 }
+	

@@ -19,8 +19,7 @@ public class MainApp {
 		//Mariadb_connect conect = new Mariadb_connect();
         @SuppressWarnings("unused")
 		EntityManager entity = Mariadb_connect.getEntityManagerFactory().createEntityManager();
-        VCliente obj = new VCliente();
-//        
+        VCliente obj = new VCliente();        
         obj.vista();
         
      

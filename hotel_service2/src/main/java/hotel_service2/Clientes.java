@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Query;
 import javax.persistence.Table;
 
 import mariadb.Mariadb_connect;
@@ -132,16 +133,16 @@ public class Clientes {
 	
 	// Metodos tipo
 	
-//	public String toString() {
-//		return "Cliente [ID_CLIENTE = "+idCliente+", Nombre= "+nomCliente+", Direccion= "+dirCliente+", Telfono "+telCliente+" Email= "+mailCliente+", Cont= "+contCliente+", Observaciones= "+objCliente+"]";
-//	}
-//	
-	Clientes clientes;
-	Scanner scanner = new Scanner(System.in);
-	 EntityManager entity = Mariadb_connect.getEntityManagerFactory().createEntityManager();
+	public String toString() {
+		return "Cliente [ID_CLIENTE = "+idCliente+", Nombre= "+nomCliente+", Direccion= "+dirCliente+", Telfono "+telCliente+" Email= "+mailCliente+", Cont= "+contCliente+", Observaciones= "+objCliente+"]";
+	}
+	
+	
 	 
 	public void crear(Clientes clientes) {
-									
+		
+		//Scanner scanner = new Scanner(System.in);
+		 EntityManager entity = Mariadb_connect.getEntityManagerFactory().createEntityManager();
 	try {
 				entity.getTransaction().begin();
 				entity.persist(clientes);
@@ -157,41 +158,67 @@ public class Clientes {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void buscar() {
-		
-		
-		Scanner scanner = new Scanner(System.in);
-	    EntityManager entity = Mariadb_connect.getEntityManagerFactory().createEntityManager();
-	    Clientes clientes = null;
-	    
-	    try {
-	    clientes = entity.find(Clientes.class, scanner.nextLong());
-		if (clientes != null) {
-			System.out.println(clientes);
-			System.out.println();
-		} else {
-			System.out.println("[!] Producto no Encontrado... [+]Lista de Clientes completa");
-
-			List<Clientes> listaClientes = new ArrayList<>();
-			javax.persistence.Query query = entity.createQuery("SELECT p FROM Clientes p");
-			listaClientes =  query.getResultList();
-			for (Clientes p : listaClientes) {
-				System.out.println(p);
-		}
-			System.out.println();
-		}
-	    } catch (Exception e) {
-	    	System.out.println("Error: " + e.getMessage());
-	    }	 finally {
-	    	entity.close();
-	    	scanner.close();
-	    }
-		 
+	public List<Clientes> buscar(Long idCliente, String nomCliente) {
+	
+		 EntityManager entityManager = Mariadb_connect.getEntityManagerFactory().createEntityManager();
+		    List<Clientes> listaClientes = new ArrayList<>();
+		    try {
+		        String jpql = "SELECT c FROM Clientes c WHERE 1=1";
+		        if (idCliente != null) {
+		            jpql += " AND c.idCliente = :id";
+		        }
+		        if (nomCliente != null) {
+		            jpql += " AND c.nomCliente LIKE :nombre";
+		        }
+		        Query query = entityManager.createQuery(jpql, Clientes.class);
+		        if (idCliente != null) {
+		            query.setParameter("id", idCliente);
+		        }
+		        if (nomCliente != null) {
+		            query.setParameter("nombre", "%" + nomCliente + "%");
+		        }
+		        listaClientes = query.getResultList();
+		        if (listaClientes.isEmpty()) {
+		            System.out.println("[!] No se encontraron clientes...");
+		        }
+		    } catch (Exception e) {
+		        System.out.println("[!] Error: " + e.getMessage());
+		    } finally {
+		        entityManager.close();
+		    }
+		    return listaClientes;
 		
 	}
 	
-	public void actualizar() {
-		
+	public void actualizar2(Long idCliente, Clientes clientes) {
+		EntityManager entity = Mariadb_connect.getEntityManagerFactory().createEntityManager();
+		entity.getTransaction().begin();
+		try {
+			Clientes cliente = entity.find(Clientes.class, idCliente);
+			if (cliente != null) {
+				
+				cliente.setNomCliente(clientes.getNomCliente());
+				cliente.setDirCliente(clientes.getDirCliente());
+				cliente.setTelCliente(clientes.getTelCliente());
+				cliente.setMailCliente(clientes.getMailCliente());
+				cliente.setContCliente(clientes.getContCliente());
+				cliente.setObjCliente(clientes.getObjCliente());
+				
+				
+				entity.merge(cliente);
+				entity.getTransaction().commit();
+				
+				 System.out.println("[+] Cliente actualizado correctamente.");
+			} else {
+				
+				System.out.println("[!] No se encontro el cliente con el ID especificado.");
+			}
+			
+	} catch (Exception e) {
+			System.out.println("Error..." + e);
+		} finally {
+			entity.close();
+		}
 	
 	}
 
