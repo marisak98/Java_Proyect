@@ -1,4 +1,7 @@
 package hotel_service2;
+//import java.awt.List;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import javax.persistence.Column;
@@ -9,9 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-
 import mariadb.Mariadb_connect;
-import vista.VCliente;
+
 
 @Entity
 @Table(name="CLIENTE")
@@ -134,11 +136,12 @@ public class Clientes {
 //		return "Cliente [ID_CLIENTE = "+idCliente+", Nombre= "+nomCliente+", Direccion= "+dirCliente+", Telfono "+telCliente+" Email= "+mailCliente+", Cont= "+contCliente+", Observaciones= "+objCliente+"]";
 //	}
 //	
+	Clientes clientes;
+	Scanner scanner = new Scanner(System.in);
+	 EntityManager entity = Mariadb_connect.getEntityManagerFactory().createEntityManager();
+	 
 	public void crear(Clientes clientes) {
-			
-		
-		 EntityManager entity = Mariadb_connect.getEntityManagerFactory().createEntityManager();
-							
+									
 	try {
 				entity.getTransaction().begin();
 				entity.persist(clientes);
@@ -153,7 +156,37 @@ public class Clientes {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void buscar() {
+		
+		
+		Scanner scanner = new Scanner(System.in);
+	    EntityManager entity = Mariadb_connect.getEntityManagerFactory().createEntityManager();
+	    Clientes clientes = null;
+	    
+	    try {
+	    clientes = entity.find(Clientes.class, scanner.nextLong());
+		if (clientes != null) {
+			System.out.println(clientes);
+			System.out.println();
+		} else {
+			System.out.println("[!] Producto no Encontrado... [+]Lista de Clientes completa");
+
+			List<Clientes> listaClientes = new ArrayList<>();
+			javax.persistence.Query query = entity.createQuery("SELECT p FROM Clientes p");
+			listaClientes =  query.getResultList();
+			for (Clientes p : listaClientes) {
+				System.out.println(p);
+		}
+			System.out.println();
+		}
+	    } catch (Exception e) {
+	    	System.out.println("Error: " + e.getMessage());
+	    }	 finally {
+	    	entity.close();
+	    	scanner.close();
+	    }
+		 
 		
 	}
 	
