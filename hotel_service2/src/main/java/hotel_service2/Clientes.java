@@ -2,8 +2,6 @@ package hotel_service2;
 //import java.awt.List;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -18,7 +16,7 @@ import mariadb.Mariadb_connect;
 
 @Entity
 @Table(name="CLIENTE")
-public class Clientes {
+public class Clientes{
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID_CLIENTE")
@@ -233,11 +231,11 @@ public class Clientes {
 		if (cliente != null) {
 			entity.remove(cliente);
 		
-	//	registroEliminado = 1;
+		registroEliminado++;
 		}
 		}
 		entity.getTransaction().commit();
-		System.out.println("[+] Se eliminarion "+ "Registros");
+		System.out.println("[+] Se eliminarion "+ registroEliminado + "Registros");
 		
 		
 		} catch (Exception e) {
