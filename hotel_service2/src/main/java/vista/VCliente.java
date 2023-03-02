@@ -1,4 +1,5 @@
 package vista;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -52,11 +53,10 @@ public class VCliente {
 	        
 	        if (clienteSeleccionado != null) {
 	        	//clientes.actualizar2(clienteSeleccionado.getIdCliente(), clienteSeleccionado);
-	        	clienteSeleccionado.setNomCliente(nomCliente);
-	        	clienteSeleccionado.setObjCliente(null);
+	        	//clienteSeleccionado.setNomCliente(nomCliente);
+	        	//clienteSeleccionado.setObjCliente(null);
 	            System.out.println("Cliente a actualizar:");
 	            System.out.println(clienteSeleccionado);
-	            clientes.actualizar2(clienteSeleccionado.getIdCliente(), clienteSeleccionado);
 	            int opcion;
 	            do {
 	            System.out.println("¿Qué desea actualizar?");
@@ -76,26 +76,32 @@ public class VCliente {
 	                    System.out.println("Nuevo nombre:");
 	                    String nombre = scanner.nextLine();
 	                    clienteSeleccionado.setNomCliente(nombre);
+	    	            clientes.actualizar2(clienteSeleccionado.getIdCliente(), clienteSeleccionado);
+
 	                    break;
 	                case 2:
 	                    System.out.println("Nueva dirección:");
 	                    String direccion = scanner.nextLine();
 	                    clienteSeleccionado.setDirCliente(direccion);
+	                    clientes.actualizar2(clienteSeleccionado.getIdCliente(), clienteSeleccionado);
 	                    break;
 	                case 3:
 	                	System.out.println("Nuevo Telefono");
 	                	String telefono = scanner.nextLine();
 	                	clienteSeleccionado.setTelCliente(telefono);
+	                	clientes.actualizar2(clienteSeleccionado.getIdCliente(), clienteSeleccionado);
 	                	break;
 	                case 4:
 	                	System.out.println("Nuevo email");
 	                	String email = scanner.nextLine();
 	                	clienteSeleccionado.setMailCliente(email);
+	                	clientes.actualizar2(clienteSeleccionado.getIdCliente(), clienteSeleccionado);
 	                	break;
 	                case 5:
 	                	System.out.println("Nuevo Contacto");
 	                	String contacto = scanner.nextLine();
 	                	clienteSeleccionado.setContCliente(contacto);
+	                	clientes.actualizar2(clienteSeleccionado.getIdCliente(), clienteSeleccionado);
 	                	break;
 	                case 6:
 	                	System.out.println("Nuevas Observaciones");
@@ -184,14 +190,28 @@ public class VCliente {
             
             		
             break;
-//        case 4:
-//            System.out.println("Digite el ID del cliente a eliminar:");
-//            int idClienteEliminar = scanner.nextInt();
-//            clientes.eliminarCliente(idClienteEliminar); // utiliza el método eliminarCliente de la Clase Clientes
-//            break;
-//        case 5:
-//            System.out.println("Saliendo del programa...");
-//            break;
+        case 4:
+        
+            System.out.println("Digite el ID del cliente a eliminar:");
+           
+            Long idClienteEliminar = scanner.nextLong();
+           // if (!idClienteEliminar.isEmpty()) {
+            List<Long> listaClientesEliminar = new ArrayList<>();
+            
+           // for (String id1 : idClienteEliminar) {
+            	listaClientesEliminar.add(idClienteEliminar);
+            	
+           // }
+            
+        	Clientes cliente = new Clientes();
+        cliente.eliminar(listaClientesEliminar);
+//        } else {
+//        	System.out.println("[!] Debe ingresar al menos un Id valido para eliminar...");
+//        }
+            break;
+        case 5:
+            System.out.println("Saliendo del programa...");
+            break;
         default:
             System.out.println("Opción no válida.");
 		}

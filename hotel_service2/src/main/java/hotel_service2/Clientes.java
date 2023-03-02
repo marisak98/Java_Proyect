@@ -222,11 +222,33 @@ public class Clientes {
 	
 	}
 
-	public void eliminar() {
+	public void eliminar(List<Long> idClientes) {
+		EntityManager entity = Mariadb_connect.getEntityManagerFactory().createEntityManager();
+		
+		try {
+		entity.getTransaction().begin();
+		Integer registroEliminado = 0;
+		for (Long idCliente : idClientes) {
+		Clientes cliente = entity.find(Clientes.class, idCliente);
+		if (cliente != null) {
+			entity.remove(cliente);
+		
+	//	registroEliminado = 1;
+		}
+		}
+		entity.getTransaction().commit();
+		System.out.println("[+] Se eliminarion "+ "Registros");
 		
 		
-	}
+		} catch (Exception e) {
+			System.out.println("[!] Error..." + e);
+			entity.getTransaction().rollback();
+		} finally {
+			entity.close();
+		}
 	
+	}
+
 	}
 
 	
