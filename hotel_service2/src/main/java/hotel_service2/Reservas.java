@@ -3,6 +3,11 @@ package hotel_service2;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+import javax.transaction.Transactional;
+
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.math.*;
 import java.time.*;
@@ -11,32 +16,34 @@ import mariadb.Mariadb_connect;
 
 @Entity
 @Table(name = "RESERVAS")
-public abstract class Reservas implements Crud {
+public class Reservas  {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID_RESERVA")
-	private long idReserva;
+	private Long idReserva;
 	
-	@OneToMany 
-	@JoinColumn(name="ID_CLIENTE")
+	@ManyToOne(fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)
+    @JoinColumn(name = "ID_SERVICIOS", referencedColumnName = "ID_SERVICIOS")
+    private Servicios servicios;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_CLIENTE", referencedColumnName = "ID_CLIENTE")
 	private Clientes cliente;
 	
-	@ManyToOne
-	@JoinColumn(name="ID_SERVICIOS")
-	private Servicios servicio;
-	
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "NUMRESER_")
-	private Integer numReserva;
+	private Integer numReserva; ////Nombre de reserva
 	
 	@Column(name = "FECENTR_RESRVA")
-	private LocalDateTime fachaEntradaReserva;
+	private LocalDate fechaEntradaReserva;
 	
 	@Column(name = "FECSALI_RESERVA")
 	private LocalDateTime fechaSalidaReserva;
 	
 	@Column(name = "TIPHA_RESERVA")
-	private String tipoHabitacionRerva;
+	private String tipoHabitacionReserva;
 	
 	@Column(name = "NUMHUS_RESERVA")
 	private Integer numHusepedReserva;
@@ -51,17 +58,17 @@ public abstract class Reservas implements Crud {
 	
 	
 	
-	public Reservas(long idReserva, Clientes cliente, Servicios servicio, Integer numReserva,
-			LocalDateTime fachaEntradaReserva, LocalDateTime fechaSalidaReserva, String tipoHabitacionRerva,
+	public Reservas(Long idReserva, Clientes cliente, Servicios servicios, Integer numReserva,
+			LocalDate fechaEntradaReserva, LocalDateTime fechaSalidaReserva, String tipoHabitacionReserva,
 			Integer numHusepedReserva, BigDecimal precioTotalReserva, String observacionesReserva) {
-		super();
+		
 		this.idReserva = idReserva;
 		this.cliente = cliente;
-		this.servicio = servicio;
+        this.servicios = servicios;
 		this.numReserva = numReserva;
-		this.fachaEntradaReserva = fachaEntradaReserva;
+		this.fechaEntradaReserva = fechaEntradaReserva;
 		this.fechaSalidaReserva = fechaSalidaReserva;
-		this.tipoHabitacionRerva = tipoHabitacionRerva;
+		this.tipoHabitacionReserva = tipoHabitacionReserva;
 		this.numHusepedReserva = numHusepedReserva;
 		this.precioTotalReserva = precioTotalReserva;
 		this.observacionesReserva = observacionesReserva;
@@ -69,22 +76,21 @@ public abstract class Reservas implements Crud {
 
 	
 
-	public Reservas(Clientes cliente, Servicios servicio, Integer numReserva, LocalDateTime fachaEntradaReserva,
-			LocalDateTime fechaSalidaReserva, String tipoHabitacionRerva, Integer numHusepedReserva,
-			BigDecimal precioTotalReserva, String observacionesReserva) {
-		super();
+	public Reservas( Servicios servicios, Clientes cliente, Integer numReserva,
+			LocalDate fachaEntradaReserva, LocalDateTime fechaSalidaReserva, String tipoHabitacionReserva,
+			Integer numHusepedReserva, BigDecimal precioTotalReserva, String observacionesReserva) {
+		
+		this.servicios = servicios;
 		this.cliente = cliente;
-		this.servicio = servicio;
 		this.numReserva = numReserva;
-		this.fachaEntradaReserva = fachaEntradaReserva;
+		this.fechaEntradaReserva = fachaEntradaReserva;
 		this.fechaSalidaReserva = fechaSalidaReserva;
-		this.tipoHabitacionRerva = tipoHabitacionRerva;
+		this.tipoHabitacionReserva = tipoHabitacionReserva;
 		this.numHusepedReserva = numHusepedReserva;
 		this.precioTotalReserva = precioTotalReserva;
 		this.observacionesReserva = observacionesReserva;
 	}
-	
-	
+
 	public Reservas() {
 		
 	}
@@ -115,14 +121,15 @@ public abstract class Reservas implements Crud {
 
 
 
-	public Servicios getServicio() {
-		return servicio;
+
+	public Servicios getServicios() {
+		return servicios;
 	}
 
 
 
-	public void setServicio(Servicios servicio) {
-		this.servicio = servicio;
+	public void setServicios(Servicios servicios) {
+		this.servicios = servicios;
 	}
 
 
@@ -139,14 +146,14 @@ public abstract class Reservas implements Crud {
 
 
 
-	public LocalDateTime getFachaEntradaReserva() {
-		return fachaEntradaReserva;
+	public LocalDate getFechaEntradaReserva() {
+		return fechaEntradaReserva;
 	}
 
 
 
-	public void setFachaEntradaReserva(LocalDateTime fachaEntradaReserva) {
-		this.fachaEntradaReserva = fachaEntradaReserva;
+	public void setFechaEntradaReserva(LocalDate fechaEntradaReserva) {
+		this.fechaEntradaReserva = fechaEntradaReserva;
 	}
 
 
@@ -163,14 +170,14 @@ public abstract class Reservas implements Crud {
 
 
 
-	public String getTipoHabitacionRerva() {
-		return tipoHabitacionRerva;
+	public String getTipoHabitacionReserva() {
+		return tipoHabitacionReserva;
 	}
 
 
 
-	public void setTipoHabitacionRerva(String tipoHabitacionRerva) {
-		this.tipoHabitacionRerva = tipoHabitacionRerva;
+	public void setTipoHabitacionReserva(String tipoHabitacionReserva) {
+		this.tipoHabitacionReserva = tipoHabitacionReserva;
 	}
 
 
@@ -211,56 +218,129 @@ public abstract class Reservas implements Crud {
 
 	//Metodos Tipo 
 	
-
-	
 	@Override
-	public void crear(Reservas reserva) {
+	public String toString() {
+		return "Reservas [idReserva=" + idReserva + ", servicios=" + servicios + ", cliente=" + cliente
+				+ ", numReserva=" + numReserva + ", fechaEntradaReserva=" + fechaEntradaReserva
+				+ ", fechaSalidaReserva=" + fechaSalidaReserva + ", tipoHabitacionReserva=" + tipoHabitacionReserva
+				+ ", numHusepedReserva=" + numHusepedReserva + ", precioTotalReserva=" + precioTotalReserva
+				+ ", observacionesReserva=" + observacionesReserva + "]";
+	}
+	
+
+	public void crear(Reservas reservas) {
 		EntityManager entity = Mariadb_connect.getEntityManagerFactory().createEntityManager();
 		
 		try {
 			entity.getTransaction().begin();
-			Clientes clientes = entity.find(Clientes.class, cliente.getIdCliente());
-			reserva.setCliente(clientes);
-			entity.persist(reserva);
-			entity.getTransaction().commit();
-			System.out.println("[+] Resrva creada con exito!");
-		} catch (Exception e) {
-			System.out.println("[!] Error al crear la reserva: " + e.getMessage());
-			entity.getTransaction().rollback();
+			Clientes cliente = entity.find(Clientes.class, reservas.getCliente().getIdCliente());
+            if (cliente == null) {
+                System.out.println("No se encontró el cliente con ID " + reservas.getCliente().getIdCliente());
+                return;
+            }
+            
+            Servicios servicio = entity.find(Servicios.class, reservas.getServicios().getIdServicios());
+            if (servicio == null) {
+                System.out.println("No se encontró el servicio con ID " + reservas.getServicios().getIdServicios());
+                return;
+            }
+            
+           reservas.setCliente(cliente);
+           reservas.setServicios(servicio);
+            
+            entity.persist(reservas);
+            entity.getTransaction().commit();
+            
+            System.out.println("Se creó la reserva con éxito.");
+        } catch (Exception e) {
+            System.out.println("Ocurrió un error al crear la reserva: " + e.getMessage());
+        } finally {
+        	entity.close();
+        }
+		
+    }
+    
+	
+	public List<Reservas> buscar(Long idReserva) {
+		EntityManager entity = Mariadb_connect.getEntityManagerFactory().createEntityManager();
+		List<Reservas> listaReservas = new ArrayList<>();
+		try {
+			String jqsl = "SELECT r FROM Reservas r JOIN r.servicios s JOIN r.cliente c WHERE 1=1";
+			if(idReserva != null){
+				jqsl += "AND r.idReserva = :id";
+			}
+			Query query = entity.createQuery(jqsl, Reservas.class);
+			if(idReserva != null) {
+				query.setParameter("id", idReserva);
+			}
 			
-		} finally {
+			listaReservas = query.getResultList();
+			if(listaReservas.isEmpty()) {
+				System.out.println("[!] No se econtraron reservas");
+			}else {
+				for (Reservas reserva : listaReservas) {
+
+					System.out.println("Reserva: " + reserva.getIdReserva());
+	                System.out.println("Cliente: " + reserva.getCliente().getNomCliente()); // Acceso a la información del cliente
+	                System.out.println("Servicio: " + reserva.getServicios().getNombre());
+			        Hibernate.initialize(reserva.getServicios());
+
+				
+				}
+			}
+		
+			
+		} catch (Exception e) {
+	        System.out.println("[!] Error: " + e.getMessage());
+		}finally {
 			entity.close();
 		}
 		
+		return listaReservas;
 	}
 
 
 
-	@Override
-	public void buscar() {
-		// TODO Auto-generated method stub
-		
+
+	public void actualizar2(Long idReservas, Reservas reservas) {
+		EntityManager  entity= Mariadb_connect.getEntityManagerFactory().createEntityManager();
+		entity.getTransaction().begin();
+		try {
+			Reservas reserva = entity.find(Reservas.class, idReservas);
+			if (reserva != null) {
+				reserva.setFechaEntradaReserva(reservas.getFechaEntradaReserva());;
+				reserva.setFechaSalidaReserva(reservas.getFechaSalidaReserva());
+				reserva.setTipoHabitacionReserva(reservas.getTipoHabitacionReserva());
+				reserva.setNumHusepedReserva(reservas.getNumHusepedReserva());
+				reserva.setPrecioTotalReserva(reservas.getPrecioTotalReserva());
+				reserva.setObservacionesReserva(reservas.getObservacionesReserva());
+			
+				entity.merge(reserva);
+				entity.getTransaction().commit();
+				System.out.println("[+] Reserva actualizado con exito!");
+
+			
+			}else {
+				System.out.println("[-] ID de la reserva no encotrado.");
+
+			}
+			
+		} catch (Exception e) {
+			System.out.println("Error: " + e);
+			
+		}finally {
+			entity.close();
+		}
+				
 	}
 
 
 
-	@Override
-	public void actualizar2() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-
-	@Override
+	
 	public void eliminar() {
-		// TODO Auto-generated method stub
 		
 	}
 	
 
-	
-	
-	
 	
 }

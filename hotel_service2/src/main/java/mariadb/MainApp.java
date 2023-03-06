@@ -7,6 +7,8 @@ import javax.persistence.EntityManager;
 import hotel_service2.Clientes;
 import hotel_service2.Usuarios;
 import vista.VCliente;
+import vista.VReservas;
+import vista.VServicios;
 public class MainApp {
 
 	public static void main(String[] args) {
@@ -19,10 +21,16 @@ public class MainApp {
 		//Mariadb_connect conect = new Mariadb_connect();
         @SuppressWarnings("unused")
 		EntityManager entity = Mariadb_connect.getEntityManagerFactory().createEntityManager();
-        VCliente obj = new VCliente();        
-        obj.vista();
+
+        ///Inovocar la clas VCliente
+//                VCliente obj = new VCliente();        
+//                obj.vista();
+
+     VReservas obj = new VReservas();
+        obj.menuReservas();
         
-     
+//        VServicios obj = new VServicios();
+//        obj.menuServicios();
         
 //        while (opcion!=5) {
 //			System.out.println("1. Crear Producto");

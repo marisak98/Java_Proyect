@@ -52,9 +52,7 @@ public class VCliente {
 	        }
 	        
 	        if (clienteSeleccionado != null) {
-	        	//clientes.actualizar2(clienteSeleccionado.getIdCliente(), clienteSeleccionado);
-	        	//clienteSeleccionado.setNomCliente(nomCliente);
-	        	//clienteSeleccionado.setObjCliente(null);
+	        	
 	            System.out.println("Cliente a actualizar:");
 	            System.out.println(clienteSeleccionado);
 	            int opcion;

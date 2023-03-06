@@ -2,12 +2,15 @@ package hotel_service2;
 //import java.awt.List;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.Table;
 
@@ -21,6 +24,9 @@ public class Clientes{
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID_CLIENTE")
 	private Long idCliente;
+	
+	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+	private List<Reservas> reservas = new ArrayList<>();
 	
 	@Column(name = "NOM_CLIENTE")
 	private String nomCliente;
@@ -39,6 +45,7 @@ public class Clientes{
 	
 	@Column(name =  "OBJ_CLIENTE")
 	private String objCliente;
+	
 	
 	// Consctrutores
 	public Clientes () {
@@ -127,6 +134,14 @@ public class Clientes{
 
 	public void setObjCliente(String objCliente) {
 		this.objCliente = objCliente;
+	}
+	
+	public List<Reservas> getReservas(){
+		return reservas;
+	} 
+	
+	public void setReservas(List<Reservas> reservas) {
+		this.reservas = reservas;
 	}
 	
 	// Metodos tipo
