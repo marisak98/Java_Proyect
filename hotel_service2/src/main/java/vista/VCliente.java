@@ -193,19 +193,16 @@ public class VCliente {
             System.out.println("Digite el ID del cliente a eliminar:");
            
             Long idClienteEliminar = scanner.nextLong();
-           // if (!idClienteEliminar.isEmpty()) {
+          
             List<Long> listaClientesEliminar = new ArrayList<>();
             
-           // for (String id1 : idClienteEliminar) {
+          
             	listaClientesEliminar.add(idClienteEliminar);
             	
-           // }
-            
+          
         	Clientes cliente = new Clientes();
         cliente.eliminar(listaClientesEliminar);
-//        } else {
-//        	System.out.println("[!] Debe ingresar al menos un Id valido para eliminar...");
-//        }
+
             break;
         case 5:
             System.out.println("Saliendo del programa...");
@@ -214,7 +211,7 @@ public class VCliente {
             System.out.println("Opción no válida.");
 		}
 	}
-	//scanner.close();
+	
 		}
    
 	

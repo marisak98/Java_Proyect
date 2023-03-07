@@ -2,6 +2,7 @@ package vista;
 
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,11 +20,11 @@ import mariadb.Mariadb_connect;
 public class VReservas {
 	
 	private Servicios servicio = new Servicios();
-	 Clientes cliente = new Clientes();
+	private Clientes cliente = new Clientes();
 	
 	
 
-	public void menuReservas() {
+	public void menuReservas() throws Exception {
 		Scanner scanner = new Scanner(System.in);
 		Integer opcion = 0;
 		while (opcion != 5) {
@@ -63,7 +64,7 @@ public class VReservas {
 				System.out.println("Ingrese la fecha de inicio de la reserva (formato dd/MM/yyyy)");
 				String fechaStr = scanner.nextLine();
 				scanner.nextLine();
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				DateTimeFormatter formatter = (DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 				LocalDate fechaInicio = null;
 				try {
 				     fechaInicio = LocalDate.parse(fechaStr, formatter);
@@ -71,21 +72,21 @@ public class VReservas {
 				} catch (DateTimeParseException e) {
 				    System.out.println("Error: la fecha ingresada no es válida. Asegúrese de usar el formato dd/MM/yyyy");
 				}
-
+				
 				
 				
 				
 				System.out.println("Ingrese la fecha de finalizacion de la reserva (formato dd/MM/yyyy hh:mm)");
                 String fechaSalidaStr = scanner.nextLine();
                 scanner.nextLine();
-                formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-                LocalDateTime fechaSalida = null;
+                formatter = (DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+                LocalDate fechaSalida = null;
                 try {
-                    fechaSalida = LocalDateTime.parse(fechaSalidaStr, formatter);
+                    fechaSalida = LocalDate.parse(fechaSalidaStr, formatter);
                 } catch (DateTimeParseException e) {
                     System.out.println("Error: la fecha ingresada no es válida. Asegúrese de usar el formato dd/MM/yyyy hh:mm");
                    
-                }
+               }
 
 				
 				
@@ -99,7 +100,7 @@ public class VReservas {
 
 				
 				System.out.println("Ingrese el precio total de la reserva");
-				BigDecimal precioTotal = scanner.nextBigDecimal();
+				Double precioTotal = scanner.nextDouble();
                 scanner.nextLine();
 
 				System.out.println("Ingrese las observaciones");
@@ -113,7 +114,7 @@ public class VReservas {
 				reserva.setCliente(cliente);
 				reserva.setServicios(servicio);
 				reserva.setFechaEntradaReserva(fechaInicio);
-				reserva.setFechaSalidaReserva(fechaSalida);
+				//reserva.setFechaSalidaReserva(fechaSalida);
 				reserva.setTipoHabitacionReserva(tipoHabitacion);
 				reserva.setNumHusepedReserva(numHuesped);
 				reserva.setPrecioTotalReserva(precioTotal);
@@ -136,92 +137,130 @@ public class VReservas {
 				break;
 				
 			case 3:	
-				menuActualizar();
+				try {
+					menuActualizar();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 				
 			case 4:
+				System.out.println("Ingrese el ID del servicio a eliminar");
+				Long idReservas = scanner.nextLong();
+				List<Long> listaServicioEliminar = new ArrayList<>();
+				listaServicioEliminar.add(idReservas);
+				
+				Reservas reservas2 = new Reservas();
+				reservas2.eliminar(listaServicioEliminar);
 				
 				break;
 				
 			case 5:
-				
+                System.exit(0);
+
 				break;
 			}
 		}	
 		}
 	
-	public void menuActualizar() {
+	public void menuActualizar() throws Exception {
 		Scanner scanner = new Scanner(System.in);
 EntityManager entityManager = Mariadb_connect.getEntityManagerFactory().createEntityManager();        
-        System.out.print("Ingrese el id de la reserva que desea actualizar: ");
-        long idReserva = scanner.nextLong();
-        Reservas reserva = entityManager.find(Reservas.class, idReserva);
+      
+System.out.print("Ingrese el id de la reserva que desea actualizar: ");
+        Long idReserva = scanner.nextLong();
+        scanner.nextLine();
+      
+        Reservas resrvas = new Reservas();
+        resrvas.setIdReserva(idReserva);
+       try {
+    	   List<Reservas> listaReservas = resrvas.buscar(idReserva);
+           if (listaReservas != null && !listaReservas.isEmpty()) {
+           	for (Reservas res : listaReservas) {
+           		System.out.println("[+] Se encontró una reserva con ese id.");
+                   System.out.println(res.toString());
+           	}
+               
+           }
+          
+	} catch (Exception e) {
+		// TODO: handle exception
+	}
+      
         
-        if (reserva == null) {
-            System.out.println("No se encontró ninguna reserva con ese id.");
-            return;
-        }
-        
-        System.out.println("Reserva actual:");
-        System.out.println(reserva.toString());
-        
-        System.out.print("Ingrese el campo que desea actualizar (cliente, servicios, numReserva, fechaEntradaReserva, fechaSalidaReserva, tipoHabitacionReserva, numHusepedReserva, precioTotalReserva, observacionesReserva): ");
-        String campo = scanner.next();
-        
-        System.out.print("Ingrese el nuevo valor del campo: ");
-        String valor = scanner.next();
-        
-        switch (campo) {
-            case "cliente":
-                long idCliente = Long.parseLong(valor);
-                Clientes cliente = entityManager.find(Clientes.class, idCliente);
-                reserva.setCliente(cliente);
+     
+        Integer opcion = 0;
+       
+        do { 
+        	System.out.println("Que campo deseas actualizar");
+        	System.out.println("1. Fecha de inicio");
+        	System.out.println("2. Fecha de salida");
+        	System.out.println("3. Tipo de habitacion");
+        	System.out.println("4. Numero de Huespedes");
+        	System.out.println("5. Precio");
+        	System.out.println("6. Observaciones");
+        	System.out.println("7. Salir");
+        	opcion = scanner.nextInt();
+        	scanner.nextLine();
+        switch (opcion) {
+            case 1:
+              System.out.println("Nueva Fecha");
+              String fechaInicioStr = scanner.nextLine();
+              LocalDate fechaInicio = LocalDate.parse(fechaInicioStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+              resrvas.setFechaEntradaReserva(fechaInicio);
+              resrvas.actualizar2(resrvas.getIdReserva(), resrvas);
                 break;
-            case "servicios":
-                long idServicios = Long.parseLong(valor);
-                Servicios servicios = entityManager.find(Servicios.class, idServicios);
-                reserva.setServicios(servicios);
+            case 2:
+            	 System.out.print("Ingrese la nueva fecha de salida (en formato dd/mm/yyyy): ");
+                 String fechaSalidaStr = scanner.nextLine();
+                 LocalDate fechaSalida = LocalDate.parse(fechaSalidaStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                 resrvas.setFechaSalidaReserva(fechaSalida);
+                 resrvas.actualizar2(resrvas.getIdReserva(), resrvas);
+
+                
                 break;
-            case "numReserva":
-                int numReserva = Integer.parseInt(valor);
-                reserva.setNumReserva(numReserva);
+            case 3:
+            	 System.out.print("Ingrese el nuevo tipo de habitación: ");
+                 String tipoHabitacion = scanner.nextLine();
+                 resrvas.setTipoHabitacionReserva(tipoHabitacion);
+                 resrvas.actualizar2(resrvas.getIdReserva(), resrvas);
+
                 break;
-            case "fechaEntradaReserva":
-                LocalDate fechaEntradaReserva = LocalDate.parse(valor);
-                reserva.setFechaEntradaReserva(fechaEntradaReserva);
+            case 4:
+            	System.out.print("Ingrese el nuevo número de huéspedes: ");
+                Integer numHuespedes = scanner.nextInt();
+                scanner.nextLine();
+                resrvas.setNumHusepedReserva(numHuespedes);
+                resrvas.actualizar2(resrvas.getIdReserva(), resrvas);
+
                 break;
-            case "fechaSalidaReserva":
-                LocalDateTime fechaSalidaReserva = LocalDateTime.parse(valor);
-                reserva.setFechaSalidaReserva(fechaSalidaReserva);
+            case 5:
+            	 System.out.print("Ingrese el nuevo precio: ");
+                 Double precio = scanner.nextDouble();
+                 scanner.nextLine();
+                 resrvas.setPrecioTotalReserva(precio);
+                 resrvas.actualizar2(resrvas.getIdReserva(), resrvas);
+
                 break;
-            case "tipoHabitacionReserva":
-                reserva.setTipoHabitacionReserva(valor);
+            case 6:
+            	 System.out.print("Ingrese las nuevas observaciones: ");
+                 String observaciones = scanner.nextLine();
+                 resrvas.setObservacionesReserva(observaciones);
+                 resrvas.actualizar2(resrvas.getIdReserva(), resrvas);
+
                 break;
-            case "numHusepedReserva":
-                int numHusepedReserva = Integer.parseInt(valor);
-                reserva.setNumHusepedReserva(numHusepedReserva);
-                break;
-            case "precioTotalReserva":
-                BigDecimal precioTotalReserva = new BigDecimal(valor);
-                reserva.setPrecioTotalReserva(precioTotalReserva);
-                break;
-            case "observacionesReserva":
-                reserva.setObservacionesReserva(valor);
+            case 7:
+                System.out.println("Saliendo del menú de actualización...");
+                System.exit(0);
                 break;
             default:
                 System.out.println("Campo inválido.");
                 return;
         }
         
-        entityManager.getTransaction().begin();
-        entityManager.merge(reserva);
-        entityManager.getTransaction().commit();
         
-        System.out.println("Reserva actualizada:");
-        System.out.println(reserva.toString());
-        
-        entityManager.close();
-		
+        } while (opcion != 7);
 		
 	}
 }

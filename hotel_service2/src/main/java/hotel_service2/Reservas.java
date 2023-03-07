@@ -32,6 +32,10 @@ public class Reservas  {
     @JoinColumn(name = "ID_CLIENTE", referencedColumnName = "ID_CLIENTE")
 	private Clientes cliente;
 	
+	@OneToMany(mappedBy = "reservas", cascade = CascadeType.ALL)
+	private List<Habitaciones> habitaciones = new ArrayList<>();
+	
+	
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "NUMRESER_")
 	private Integer numReserva; ////Nombre de reserva
@@ -40,7 +44,7 @@ public class Reservas  {
 	private LocalDate fechaEntradaReserva;
 	
 	@Column(name = "FECSALI_RESERVA")
-	private LocalDateTime fechaSalidaReserva;
+	private LocalDate fechaSalidaReserva;
 	
 	@Column(name = "TIPHA_RESERVA")
 	private String tipoHabitacionReserva;
@@ -49,7 +53,7 @@ public class Reservas  {
 	private Integer numHusepedReserva;
 	
 	@Column(name = "PRETO_RESERVA")
-	private BigDecimal precioTotalReserva;
+	private Double precioTotalReserva;
 	
 	@Column(name = "OBS_RESERVA")
 	private String observacionesReserva;
@@ -59,8 +63,8 @@ public class Reservas  {
 	
 	
 	public Reservas(Long idReserva, Clientes cliente, Servicios servicios, Integer numReserva,
-			LocalDate fechaEntradaReserva, LocalDateTime fechaSalidaReserva, String tipoHabitacionReserva,
-			Integer numHusepedReserva, BigDecimal precioTotalReserva, String observacionesReserva) {
+			LocalDate fechaEntradaReserva, LocalDate fechaSalidaReserva, String tipoHabitacionReserva,
+			Integer numHusepedReserva, Double precioTotalReserva, String observacionesReserva) {
 		
 		this.idReserva = idReserva;
 		this.cliente = cliente;
@@ -77,8 +81,8 @@ public class Reservas  {
 	
 
 	public Reservas( Servicios servicios, Clientes cliente, Integer numReserva,
-			LocalDate fachaEntradaReserva, LocalDateTime fechaSalidaReserva, String tipoHabitacionReserva,
-			Integer numHusepedReserva, BigDecimal precioTotalReserva, String observacionesReserva) {
+			LocalDate fachaEntradaReserva, LocalDate fechaSalidaReserva, String tipoHabitacionReserva,
+			Integer numHusepedReserva, Double precioTotalReserva, String observacionesReserva) {
 		
 		this.servicios = servicios;
 		this.cliente = cliente;
@@ -158,13 +162,13 @@ public class Reservas  {
 
 
 
-	public LocalDateTime getFechaSalidaReserva() {
+	public LocalDate getFechaSalidaReserva() {
 		return fechaSalidaReserva;
 	}
 
 
 
-	public void setFechaSalidaReserva(LocalDateTime fechaSalidaReserva) {
+	public void setFechaSalidaReserva(LocalDate fechaSalidaReserva) {
 		this.fechaSalidaReserva = fechaSalidaReserva;
 	}
 
@@ -194,13 +198,13 @@ public class Reservas  {
 
 
 
-	public BigDecimal getPrecioTotalReserva() {
+	public Double getPrecioTotalReserva() {
 		return precioTotalReserva;
 	}
 
 
 
-	public void setPrecioTotalReserva(BigDecimal precioTotalReserva) {
+	public void setPrecioTotalReserva(Double precioTotalReserva) {
 		this.precioTotalReserva = precioTotalReserva;
 	}
 
@@ -218,14 +222,14 @@ public class Reservas  {
 
 	//Metodos Tipo 
 	
-	@Override
-	public String toString() {
-		return "Reservas [idReserva=" + idReserva + ", servicios=" + servicios + ", cliente=" + cliente
-				+ ", numReserva=" + numReserva + ", fechaEntradaReserva=" + fechaEntradaReserva
-				+ ", fechaSalidaReserva=" + fechaSalidaReserva + ", tipoHabitacionReserva=" + tipoHabitacionReserva
-				+ ", numHusepedReserva=" + numHusepedReserva + ", precioTotalReserva=" + precioTotalReserva
-				+ ", observacionesReserva=" + observacionesReserva + "]";
-	}
+//	@Override
+//	public String toString() {
+//		return "Reservas [idReserva=" + idReserva + ", servicios=" + servicios + ", cliente=" + cliente
+//				+ ", numReserva=" + numReserva + ", fechaEntradaReserva=" + fechaEntradaReserva
+//				+ ", fechaSalidaReserva=" + fechaSalidaReserva + ", tipoHabitacionReserva=" + tipoHabitacionReserva
+//				+ ", numHusepedReserva=" + numHusepedReserva + ", precioTotalReserva=" + precioTotalReserva
+//				+ ", observacionesReserva=" + observacionesReserva + "]";
+//	}
 	
 
 	public void crear(Reservas reservas) {
@@ -260,8 +264,9 @@ public class Reservas  {
 		
     }
     
-	
-	public List<Reservas> buscar(Long idReserva) {
+	@Transactional
+
+	public List<Reservas> buscar(Long idReserva) throws Exception {
 		EntityManager entity = Mariadb_connect.getEntityManagerFactory().createEntityManager();
 		List<Reservas> listaReservas = new ArrayList<>();
 		try {
@@ -283,6 +288,7 @@ public class Reservas  {
 					System.out.println("Reserva: " + reserva.getIdReserva());
 	                System.out.println("Cliente: " + reserva.getCliente().getNomCliente()); // Acceso a la información del cliente
 	                System.out.println("Servicio: " + reserva.getServicios().getNombre());
+	               listaReservas.size();
 			        Hibernate.initialize(reserva.getServicios());
 
 				
@@ -337,8 +343,28 @@ public class Reservas  {
 
 
 	
-	public void eliminar() {
-		
+	public void eliminar(List<Long> idReservas) {
+		EntityManager entity = Mariadb_connect.getEntityManagerFactory().createEntityManager();
+		try {
+			entity.getTransaction().begin();
+			Integer registroEliminado = 0;
+			for (Long idReserva : idReservas){
+			Reservas reservas = entity.find(Reservas.class, idReserva);
+			
+			if (reservas != null) {
+				entity.remove(reservas);
+				registroEliminado++;
+			}
+			}
+			entity.getTransaction().commit();
+			System.out.println("Se eliminaron " + registroEliminado + " Registros");
+			
+		} catch (Exception e) {
+			System.out.println("Error" + e);
+			entity.getTransaction().rollback();
+		} finally {
+			entity.close();
+		}
 	}
 	
 
